@@ -592,3 +592,12 @@ html[data-theme]{ transition:background-color .5s var(--ease); }
   70%{  opacity:1; transform:scale(1) translateY(-18px) rotate(var(--spin,0deg)); }
   100%{ opacity:0; transform:scale(.85) translateY(-56px) rotate(var(--spin,0deg)); }
 }
+
+/* ───── Live day count in the hero ───── */
+.hero__days{
+  margin-top:.8rem;
+  font-family:var(--font-script);
+  font-size:clamp(1.15rem,3.6vw,1.7rem);
+  color:var(--rose);
+}
+.hero__days span{ font-weight:700; font-variant-numeric:tabular-nums; }

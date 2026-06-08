@@ -146,28 +146,28 @@
     petalLayer.appendChild(p);
     setTimeout(function () { if (p.parentNode) p.parentNode.removeChild(p); }, dur * 1000 + 500);
   }
-  // Big hearts scattered all across the screen — they pop in, drift up, fade out.
+  // Big hearts scattered all over the WHOLE page — they pop in, drift up, fade out.
   function scatter(count, glyphs) {
     if (!petalLayer) return;
     glyphs = glyphs || HEARTS;
-    count = count || (reduceMotion ? 10 : 26);
+    count = count || (reduceMotion ? 16 : 46);
     for (var i = 0; i < count; i++) {
       var p = document.createElement("span");
       p.className = "petal pop";
       p.textContent = glyphs[Math.floor(Math.random() * glyphs.length)];
-      var size = 30 + Math.random() * 34;             // big
-      var dur = 1.7 + Math.random() * 1.6;
-      p.style.left = (4 + Math.random() * 92) + "vw";  // scattered across X
-      p.style.top = (8 + Math.random() * 78) + "vh";   // scattered across Y
+      var size = 26 + Math.random() * 34;              // big
+      var dur = 1.7 + Math.random() * 1.7;
+      p.style.left = (2 + Math.random() * 96) + "vw";  // spread across the full width
+      p.style.top = (3 + Math.random() * 90) + "vh";   // spread across the full height
       p.style.fontSize = size + "px";
       p.style.animationDuration = dur + "s";
-      p.style.animationDelay = (Math.random() * 0.45).toFixed(2) + "s";
+      p.style.animationDelay = (Math.random() * 0.6).toFixed(2) + "s";
       p.style.setProperty("--spin", (Math.random() * 50 - 25) + "deg");
       p.style.opacity = reduceMotion ? "0.95" : "0";
       petalLayer.appendChild(p);
       (function (node, life) {
         setTimeout(function () { if (node.parentNode) node.parentNode.removeChild(node); }, life);
-      })(p, (dur + 0.5) * 1000 + 600);
+      })(p, (dur + 0.6) * 1000 + 700);
     }
     chime();
   }
@@ -187,20 +187,23 @@
         your timezone — Eastern is -04:00 in summer (EDT) and -05:00 in winter (EST). */
   var ANNIVERSARY = new Date("2025-06-09T23:47:00-04:00"); // 9 June 2025, 11:47 PM Eastern
   var cD = document.getElementById("c-days"), cH = document.getElementById("c-hrs"),
-      cM = document.getElementById("c-min"), cS = document.getElementById("c-sec");
+      cM = document.getElementById("c-min"), cS = document.getElementById("c-sec"),
+      heroDays = document.getElementById("hero-days");
   function pad(n) { return (n < 10 ? "0" : "") + n; }
   function tickCounter() {
-    if (!cD) return;
     var diff = Date.now() - ANNIVERSARY.getTime();
     if (diff < 0) diff = 0;
     var s = Math.floor(diff / 1000);
     var days = Math.floor(s / 86400); s -= days * 86400;
     var hrs = Math.floor(s / 3600); s -= hrs * 3600;
     var mins = Math.floor(s / 60); s -= mins * 60;
-    cD.textContent = days.toLocaleString(); cH.textContent = pad(hrs);
-    cM.textContent = pad(mins); cS.textContent = pad(s);
+    if (cD) {
+      cD.textContent = days.toLocaleString(); cH.textContent = pad(hrs);
+      cM.textContent = pad(mins); cS.textContent = pad(s);
+    }
+    if (heroDays) heroDays.textContent = days.toLocaleString();
   }
-  if (cD) { tickCounter(); setInterval(tickCounter, 1000); }
+  if (cD || heroDays) { tickCounter(); setInterval(tickCounter, 1000); }
 
   /* ───── Reasons I love you ───── */
   var REASONS = [
