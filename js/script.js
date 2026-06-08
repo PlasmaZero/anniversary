@@ -146,39 +146,46 @@
     petalLayer.appendChild(p);
     setTimeout(function () { if (p.parentNode) p.parentNode.removeChild(p); }, dur * 1000 + 500);
   }
-  function burst(x, y, glyphs) {
-    var n = reduceMotion ? 6 : 16;
-    for (var i = 0; i < n; i++) makeHeart(x, y, { glyphs: glyphs });
-    chime();
-  }
-  function rainLove(count) {
-    count = count || (reduceMotion ? 10 : 38);
-    var i = 0;
-    var t = setInterval(function () {
-      makeHeart(null, null, { minSize: 12, range: 22, minDur: 4, durRange: 4, opacity: 0.85 });
-      if (++i >= count) clearInterval(t);
-    }, 70);
+  // Big hearts scattered all across the screen — they pop in, drift up, fade out.
+  function scatter(count, glyphs) {
+    if (!petalLayer) return;
+    glyphs = glyphs || HEARTS;
+    count = count || (reduceMotion ? 10 : 26);
+    for (var i = 0; i < count; i++) {
+      var p = document.createElement("span");
+      p.className = "petal pop";
+      p.textContent = glyphs[Math.floor(Math.random() * glyphs.length)];
+      var size = 30 + Math.random() * 34;             // big
+      var dur = 1.7 + Math.random() * 1.6;
+      p.style.left = (4 + Math.random() * 92) + "vw";  // scattered across X
+      p.style.top = (8 + Math.random() * 78) + "vh";   // scattered across Y
+      p.style.fontSize = size + "px";
+      p.style.animationDuration = dur + "s";
+      p.style.animationDelay = (Math.random() * 0.45).toFixed(2) + "s";
+      p.style.setProperty("--spin", (Math.random() * 50 - 25) + "deg");
+      p.style.opacity = reduceMotion ? "0.95" : "0";
+      petalLayer.appendChild(p);
+      (function (node, life) {
+        setTimeout(function () { if (node.parentNode) node.parentNode.removeChild(node); }, life);
+      })(p, (dur + 0.5) * 1000 + 600);
+    }
     chime();
   }
 
   /* ───── Closing buttons ───── */
-  function fromBtn(btn, glyphs, msg) {
-    var r = btn.getBoundingClientRect();
-    burst(r.left + r.width / 2, r.top, glyphs);
-    if (msg) toast(msg);
-  }
   var loveBtn = document.getElementById("loveBtn");
-  if (loveBtn) loveBtn.addEventListener("click", function () { fromBtn(loveBtn, ["🤍", "♥", "💗", "❤"]); });
+  if (loveBtn) loveBtn.addEventListener("click", function () { scatter(null, ["🤍", "♥", "💗", "❤"]); });
   var kissBtn = document.getElementById("kissBtn");
-  if (kissBtn) kissBtn.addEventListener("click", function () { fromBtn(kissBtn, ["😘", "💋", "💕"], "mwah 💋"); });
+  if (kissBtn) kissBtn.addEventListener("click", function () { scatter(null, ["😘", "💋", "💕"]); toast("mwah 💋"); });
   var replayBtn = document.getElementById("replayBtn");
   if (replayBtn) replayBtn.addEventListener("click", function () {
     window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
   });
 
   /* ───── Live "time together" counter ─────
-     ❤ Change this to your real first day together: new Date(YEAR, MONTH-1, DAY) */
-  var ANNIVERSARY = new Date(2025, 5, 8, 0, 0, 0); // 8 June 2025
+     ❤ Your first day together, as "YYYY-MM-DDTHH:MM:SS±HH:MM". The trailing offset is
+        your timezone — Eastern is -04:00 in summer (EDT) and -05:00 in winter (EST). */
+  var ANNIVERSARY = new Date("2025-06-09T23:47:00-04:00"); // 9 June 2025, 11:47 PM Eastern
   var cD = document.getElementById("c-days"), cH = document.getElementById("c-hrs"),
       cM = document.getElementById("c-min"), cS = document.getElementById("c-sec");
   function pad(n) { return (n < 10 ? "0" : "") + n; }
@@ -242,7 +249,7 @@
   if (dock) { window.addEventListener("scroll", toggleDock, { passive: true }); toggleDock(); }
 
   var rainBtn = document.getElementById("rainBtn");
-  if (rainBtn) rainBtn.addEventListener("click", function () { rainLove(); });
+  if (rainBtn) rainBtn.addEventListener("click", function () { scatter(); });
 
   var THEMES = ["blush", "sunset", "lavender", "starlight"];
   var THEME_NAMES = { blush: "Blush", sunset: "Sunset", lavender: "Lavender", starlight: "Starlight" };

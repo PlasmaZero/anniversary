@@ -576,3 +576,19 @@ html[data-theme]{ transition:background-color .5s var(--ease); }
   .dock__btn{ width:46px; height:46px; font-size:1.15rem; }
   .closing__btns{ flex-direction:column; align-items:center; }
 }
+
+/* ───── Scattered "pop" hearts (button bursts) ───── */
+.petal.pop{
+  top:auto;
+  animation-name:pop;
+  animation-timing-function:var(--ease);
+  animation-fill-mode:both;
+  filter:drop-shadow(0 4px 12px rgba(184,69,108,.4));
+  will-change:transform, opacity;
+}
+@keyframes pop{
+  0%{   opacity:0; transform:scale(0) rotate(0deg); }
+  25%{  opacity:1; transform:scale(1.18) rotate(var(--spin,0deg)); }
+  70%{  opacity:1; transform:scale(1) translateY(-18px) rotate(var(--spin,0deg)); }
+  100%{ opacity:0; transform:scale(.85) translateY(-56px) rotate(var(--spin,0deg)); }
+}
