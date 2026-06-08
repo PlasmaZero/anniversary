@@ -207,22 +207,25 @@
 
   /* ───── Reasons I love you ───── */
   var REASONS = [
-    "The way you laugh at your own jokes before you even finish them.",
-    "How you swear you're not hungry and then eat half of mine anyway.",
+    "How you're always hungry and always snack.",
     "That you let me be the silliest version of myself, and love me anyway.",
-    "The little hum you do when the food is really, really good.",
-    "How our plushie shelf keeps growing and you somehow blame me every time.",
-    "The face you pull in every single front-camera photo. Yes — that one.",
-    "That you held my hand on the glass floor when we were both terrified.",
-    "How we end up matching without ever planning to.",
-    "The way you say my name when you're half asleep.",
-    "That you make an ordinary Tuesday feel like somewhere worth being.",
+    "How your plushie shelf keeps growing and you somehow blame me every time (I took us to Round1).",
+    "The face where you open you're mouth cause you're shocked.",
+    "That you always wanna hold my hand be together.",
+    "How we sometimes text each other right when the other person was about to as well",
+    "The nicknames you call me.",
+    "That you make an ordinary day feel special cause we're together.",
     "How you remember the tiny things I forget I ever said.",
-    "Your matcha order — and the fact that I've got it memorised.",
+    "How you look so pretty in everything you wear.",
     "That every adventure is better just because you're the one beside me.",
-    "The way you look at me when you think I'm not looking.",
-    "Because a whole year in, your smile still makes me nervous.",
-    "How 'home' quietly started meaning wherever you are."
+    "The way you look at me and take pictures when you think I'm not looking.",
+    "Your smile is so nice to see and makes me smile.",
+    "How 'home' quietly started meaning wherever you are.",
+    "How you always think about me and ensure I'm happy.",
+    "You see the best in me even when I don't deserve it.",
+    "Your contagious laugh even when nothing is funny",
+    "All of the memories we shared and food we have eaten",
+  
   ];
   var reasonBtn = document.getElementById("reasonBtn"),
       reasonText = document.getElementById("reasonText"),
