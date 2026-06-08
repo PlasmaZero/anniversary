@@ -225,7 +225,15 @@
     "You see the best in me even when I don't deserve it.",
     "Your contagious laugh even when nothing is funny",
     "All of the memories we shared and food we have eaten",
-  
+    "How you steal my hoodie and somehow it looks better on you.",
+    "That you save me the last bite even when I know you wanted it.",
+    "How you get excited telling me about your day before I even ask.",
+    "The way you reach for me in your sleep without even waking up.",
+    "How you make me want to be a little better every single day.",
+    "That you text me you're home without me having to ask.",
+    "The way you hold onto my arm when we're walking through crowds.",
+    "How you light up when you're telling me about something you love.",
+    "How you somehow make even waiting in line feel fun."
   ];
   var reasonBtn = document.getElementById("reasonBtn"),
       reasonText = document.getElementById("reasonText"),
