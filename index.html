@@ -81,6 +81,19 @@
     </div>
   </section>
 
+  <!-- ░░░ Live counter ░░░ -->
+  <section class="counter reveal">
+    <p class="eyebrow">since our very first day</p>
+    <h2>We've been &ldquo;us&rdquo; for&hellip;</h2>
+    <div class="counter__grid" aria-live="polite">
+      <div class="counter__cell"><span class="counter__num" id="c-days">&middot;&middot;</span><span class="counter__label">days</span></div>
+      <div class="counter__cell"><span class="counter__num" id="c-hrs">&middot;&middot;</span><span class="counter__label">hours</span></div>
+      <div class="counter__cell"><span class="counter__num" id="c-min">&middot;&middot;</span><span class="counter__label">minutes</span></div>
+      <div class="counter__cell"><span class="counter__num" id="c-sec">&middot;&middot;</span><span class="counter__label">seconds</span></div>
+    </div>
+    <p class="counter__note">&hellip;and I'm not counting down. I'm counting <em>up</em>. 💗</p>
+  </section>
+
   <!-- ░░░ 02 · Among the stars ░░░ -->
   <section class="chapter chapter--split chapter--reverse">
     <div class="chapter__text reveal">
@@ -253,6 +266,17 @@
     </div>
   </section>
 
+  <!-- ░░░ Reasons generator ░░░ -->
+  <section class="reasons">
+    <div class="reasons__card reveal">
+      <p class="eyebrow">ask me anytime</p>
+      <h2>Reasons I keep falling for&nbsp;you</h2>
+      <p class="reasons__display" id="reasonText">Press the button and I'll give you one. Fair warning: there are a lot.</p>
+      <button class="btn btn--big" id="reasonBtn" type="button">give me a reason 💗</button>
+      <p class="reasons__count" id="reasonCount">&nbsp;</p>
+    </div>
+  </section>
+
   <!-- ░░░ 13 · The letter ░░░ -->
   <section class="letter" id="letter">
     <div class="letter__paper reveal">
@@ -277,7 +301,11 @@
       <p class="closing__small reveal">here's to us</p>
       <h2 class="closing__title reveal" data-d="2">Year Two,<br>loading…</h2>
       <p class="closing__sub reveal" data-d="3">I'd choose you again — every single time.</p>
-      <button class="closing__btn" id="loveBtn" type="button">tap for a little love 🤍</button>
+      <div class="closing__btns">
+        <button class="closing__btn" id="loveBtn" type="button">tap for a little love 🤍</button>
+        <button class="closing__btn" id="kissBtn" type="button">send me a kiss 😘</button>
+        <button class="closing__btn closing__btn--ghost" id="replayBtn" type="button">relive our year ↺</button>
+      </div>
     </div>
   </section>
 
@@ -288,6 +316,28 @@
   <p class="footer__line">For Elisha, with my whole heart.</p>
   <p class="footer__small">Happy one year — and many, many more. <a href="#top">back to the start ↑</a></p>
 </footer>
+
+<!-- ░░░ Floating love controls ░░░ -->
+<div class="dock" id="dock">
+  <button class="dock__btn" id="rainBtn" type="button" title="Shower me with love" aria-label="Shower hearts">🤍</button>
+  <button class="dock__btn" id="moodBtn" type="button" title="Change the mood" aria-label="Change colour theme">🎨</button>
+  <button class="dock__btn" id="soundBtn" type="button" title="Sound on / off" aria-label="Toggle sound" aria-pressed="false">🔈</button>
+  <button class="dock__btn dock__btn--top" id="topBtn" type="button" title="Back to top" aria-label="Back to top">↑</button>
+</div>
+
+<!-- ░░░ Photo lightbox ░░░ -->
+<div class="lightbox" id="lightbox" aria-hidden="true" role="dialog" aria-label="Photo viewer">
+  <button class="lightbox__close" id="lbClose" type="button" aria-label="Close">&times;</button>
+  <button class="lightbox__nav lightbox__prev" id="lbPrev" type="button" aria-label="Previous photo">&lsaquo;</button>
+  <figure class="lightbox__stage">
+    <img class="lightbox__img" id="lbImg" src="" alt="" />
+    <figcaption class="lightbox__cap" id="lbCap"></figcaption>
+  </figure>
+  <button class="lightbox__nav lightbox__next" id="lbNext" type="button" aria-label="Next photo">&rsaquo;</button>
+</div>
+
+<!-- little message popup -->
+<div class="toast" id="toast" aria-live="polite"></div>
 
 <script src="js/script.js"></script>
 </body>

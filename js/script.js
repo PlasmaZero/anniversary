@@ -94,34 +94,216 @@
     });
   }
 
-  /* ───── "tap for a little love" burst ───── */
-  var loveBtn = document.getElementById("loveBtn");
-  function burst(originX, originY) {
-    if (!petalLayer) return;
-    var n = reduceMotion ? 6 : 16;
-    for (var i = 0; i < n; i++) {
-      (function () {
-        var p = document.createElement("span");
-        p.className = "petal";
-        p.textContent = HEARTS[Math.floor(Math.random() * HEARTS.length)];
-        var size = 14 + Math.random() * 22;
-        var dur = 4 + Math.random() * 3;
-        p.style.left = originX + "px";
-        p.style.top = originY + "px";
-        p.style.fontSize = size + "px";
-        p.style.animationDuration = dur + "s";
-        p.style.setProperty("--drift", (Math.random() * 320 - 160) + "px");
-        p.style.setProperty("--spin", (Math.random() * 720 - 360) + "deg");
-        p.style.opacity = "0.9";
-        petalLayer.appendChild(p);
-        setTimeout(function () { if (p.parentNode) p.parentNode.removeChild(p); }, dur * 1000 + 400);
-      })();
-    }
+  /* ───── Little message popup ───── */
+  var toastEl = document.getElementById("toast");
+  var toastTimer;
+  function toast(msg) {
+    if (!toastEl) return;
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.classList.remove("show"); }, 2300);
   }
-  if (loveBtn) {
-    loveBtn.addEventListener("click", function () {
-      var r = loveBtn.getBoundingClientRect();
-      burst(r.left + r.width / 2, r.top);
+
+  /* ───── Gentle chime (Web Audio, off by default) ───── */
+  var soundOn = false, audioCtx = null;
+  function chime() {
+    if (!soundOn) return;
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      var now = audioCtx.currentTime;
+      [659.25, 987.77].forEach(function (f, idx) {
+        var o = audioCtx.createOscillator(), g = audioCtx.createGain();
+        o.type = "sine"; o.frequency.value = f;
+        o.connect(g); g.connect(audioCtx.destination);
+        var t0 = now + idx * 0.08;
+        g.gain.setValueAtTime(0, t0);
+        g.gain.linearRampToValueAtTime(0.11, t0 + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.5);
+        o.start(t0); o.stop(t0 + 0.55);
+      });
+    } catch (e) { /* no audio, no problem */ }
+  }
+
+  /* ───── Heart makers ───── */
+  function makeHeart(x, y, opts) {
+    if (!petalLayer) return;
+    opts = opts || {};
+    var glyphs = opts.glyphs || HEARTS;
+    var p = document.createElement("span");
+    p.className = "petal";
+    p.textContent = glyphs[Math.floor(Math.random() * glyphs.length)];
+    var size = (opts.minSize || 14) + Math.random() * (opts.range || 22);
+    var dur = (opts.minDur || 4) + Math.random() * (opts.durRange || 3);
+    if (x == null) { p.style.left = Math.random() * 100 + "vw"; }
+    else { p.style.left = x + "px"; p.style.top = y + "px"; }
+    var spread = opts.drift || 320;
+    p.style.fontSize = size + "px";
+    p.style.animationDuration = dur + "s";
+    p.style.setProperty("--drift", (Math.random() * spread - spread / 2) + "px");
+    p.style.setProperty("--spin", (Math.random() * 720 - 360) + "deg");
+    p.style.opacity = (opts.opacity || 0.9).toString();
+    petalLayer.appendChild(p);
+    setTimeout(function () { if (p.parentNode) p.parentNode.removeChild(p); }, dur * 1000 + 500);
+  }
+  function burst(x, y, glyphs) {
+    var n = reduceMotion ? 6 : 16;
+    for (var i = 0; i < n; i++) makeHeart(x, y, { glyphs: glyphs });
+    chime();
+  }
+  function rainLove(count) {
+    count = count || (reduceMotion ? 10 : 38);
+    var i = 0;
+    var t = setInterval(function () {
+      makeHeart(null, null, { minSize: 12, range: 22, minDur: 4, durRange: 4, opacity: 0.85 });
+      if (++i >= count) clearInterval(t);
+    }, 70);
+    chime();
+  }
+
+  /* ───── Closing buttons ───── */
+  function fromBtn(btn, glyphs, msg) {
+    var r = btn.getBoundingClientRect();
+    burst(r.left + r.width / 2, r.top, glyphs);
+    if (msg) toast(msg);
+  }
+  var loveBtn = document.getElementById("loveBtn");
+  if (loveBtn) loveBtn.addEventListener("click", function () { fromBtn(loveBtn, ["🤍", "♥", "💗", "❤"]); });
+  var kissBtn = document.getElementById("kissBtn");
+  if (kissBtn) kissBtn.addEventListener("click", function () { fromBtn(kissBtn, ["😘", "💋", "💕"], "mwah 💋"); });
+  var replayBtn = document.getElementById("replayBtn");
+  if (replayBtn) replayBtn.addEventListener("click", function () {
+    window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+  });
+
+  /* ───── Live "time together" counter ─────
+     ❤ Change this to your real first day together: new Date(YEAR, MONTH-1, DAY) */
+  var ANNIVERSARY = new Date(2025, 5, 8, 0, 0, 0); // 8 June 2025
+  var cD = document.getElementById("c-days"), cH = document.getElementById("c-hrs"),
+      cM = document.getElementById("c-min"), cS = document.getElementById("c-sec");
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+  function tickCounter() {
+    if (!cD) return;
+    var diff = Date.now() - ANNIVERSARY.getTime();
+    if (diff < 0) diff = 0;
+    var s = Math.floor(diff / 1000);
+    var days = Math.floor(s / 86400); s -= days * 86400;
+    var hrs = Math.floor(s / 3600); s -= hrs * 3600;
+    var mins = Math.floor(s / 60); s -= mins * 60;
+    cD.textContent = days.toLocaleString(); cH.textContent = pad(hrs);
+    cM.textContent = pad(mins); cS.textContent = pad(s);
+  }
+  if (cD) { tickCounter(); setInterval(tickCounter, 1000); }
+
+  /* ───── Reasons I love you ───── */
+  var REASONS = [
+    "The way you laugh at your own jokes before you even finish them.",
+    "How you swear you're not hungry and then eat half of mine anyway.",
+    "That you let me be the silliest version of myself, and love me anyway.",
+    "The little hum you do when the food is really, really good.",
+    "How our plushie shelf keeps growing and you somehow blame me every time.",
+    "The face you pull in every single front-camera photo. Yes — that one.",
+    "That you held my hand on the glass floor when we were both terrified.",
+    "How we end up matching without ever planning to.",
+    "The way you say my name when you're half asleep.",
+    "That you make an ordinary Tuesday feel like somewhere worth being.",
+    "How you remember the tiny things I forget I ever said.",
+    "Your matcha order — and the fact that I've got it memorised.",
+    "That every adventure is better just because you're the one beside me.",
+    "The way you look at me when you think I'm not looking.",
+    "Because a whole year in, your smile still makes me nervous.",
+    "How 'home' quietly started meaning wherever you are."
+  ];
+  var reasonBtn = document.getElementById("reasonBtn"),
+      reasonText = document.getElementById("reasonText"),
+      reasonCount = document.getElementById("reasonCount");
+  function shuffle(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  if (reasonBtn && reasonText) {
+    var order = shuffle(REASONS.map(function (_, i) { return i; })), pos = 0, shown = 0;
+    reasonBtn.addEventListener("click", function () {
+      if (pos >= order.length) { shuffle(order); pos = 0; }
+      var idx = order[pos++]; shown++;
+      reasonText.classList.add("swap");
+      setTimeout(function () {
+        reasonText.textContent = "“" + REASONS[idx] + "”";
+        reasonText.classList.remove("swap");
+      }, 280);
+      if (reasonCount) reasonCount.textContent = "reason no. " + shown;
+      reasonBtn.textContent = "another one 💗";
+      var r = reasonBtn.getBoundingClientRect();
+      makeHeart(r.left + r.width / 2, r.top, { glyphs: ["💗"], minSize: 14, range: 10, drift: 160 });
+      chime();
     });
   }
+
+  /* ───── Floating dock ───── */
+  var dock = document.getElementById("dock");
+  function toggleDock() { if (dock) dock.classList.toggle("show", (window.scrollY || 0) > window.innerHeight * 0.6); }
+  if (dock) { window.addEventListener("scroll", toggleDock, { passive: true }); toggleDock(); }
+
+  var rainBtn = document.getElementById("rainBtn");
+  if (rainBtn) rainBtn.addEventListener("click", function () { rainLove(); });
+
+  var THEMES = ["blush", "sunset", "lavender", "starlight"];
+  var THEME_NAMES = { blush: "Blush", sunset: "Sunset", lavender: "Lavender", starlight: "Starlight" };
+  try { var saved = localStorage.getItem("ed-theme"); if (saved && THEMES.indexOf(saved) !== -1) document.documentElement.setAttribute("data-theme", saved); } catch (e) {}
+  var moodBtn = document.getElementById("moodBtn");
+  if (moodBtn) moodBtn.addEventListener("click", function () {
+    var cur = document.documentElement.getAttribute("data-theme") || "blush";
+    var next = THEMES[(THEMES.indexOf(cur) + 1) % THEMES.length];
+    document.documentElement.setAttribute("data-theme", next);
+    try { localStorage.setItem("ed-theme", next); } catch (e) {}
+    toast("mood: " + THEME_NAMES[next]);
+  });
+
+  var soundBtn = document.getElementById("soundBtn");
+  if (soundBtn) soundBtn.addEventListener("click", function () {
+    soundOn = !soundOn;
+    soundBtn.textContent = soundOn ? "🔊" : "🔈";
+    soundBtn.setAttribute("aria-pressed", soundOn ? "true" : "false");
+    if (soundOn) { chime(); toast("sound on 🔊"); } else { toast("sound off 🔈"); }
+  });
+
+  var topBtn = document.getElementById("topBtn");
+  if (topBtn) topBtn.addEventListener("click", function () {
+    window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+  });
+
+  /* ───── Photo lightbox ───── */
+  var lb = document.getElementById("lightbox"),
+      lbImg = document.getElementById("lbImg"),
+      lbCap = document.getElementById("lbCap"),
+      lbClose = document.getElementById("lbClose"),
+      lbPrev = document.getElementById("lbPrev"),
+      lbNext = document.getElementById("lbNext");
+  if (lb && lbImg) {
+    var photos = Array.prototype.slice.call(document.querySelectorAll(".frame img")), lbIndex = 0;
+    var capFor = function (img) {
+      var fc = img.parentNode ? img.parentNode.querySelector("figcaption") : null;
+      return fc ? fc.textContent.trim() : (img.getAttribute("alt") || "");
+    };
+    var showLb = function () {
+      var img = photos[lbIndex];
+      lbImg.src = img.currentSrc || img.src;
+      lbImg.alt = img.getAttribute("alt") || "";
+      lbCap.textContent = capFor(img);
+    };
+    var openLb = function (i) { lbIndex = i; showLb(); lb.classList.add("open"); lb.setAttribute("aria-hidden", "false"); document.body.style.overflow = "hidden"; };
+    var closeLb = function () { lb.classList.remove("open"); lb.setAttribute("aria-hidden", "true"); document.body.style.overflow = ""; };
+    var nav = function (d) { lbIndex = (lbIndex + d + photos.length) % photos.length; showLb(); };
+    photos.forEach(function (img, i) { img.addEventListener("click", function () { openLb(i); }); });
+    lb.addEventListener("click", function (e) { if (e.target === lb || e.target === lbImg.parentNode) closeLb(); });
+    if (lbClose) lbClose.addEventListener("click", closeLb);
+    if (lbPrev) lbPrev.addEventListener("click", function (e) { e.stopPropagation(); nav(-1); });
+    if (lbNext) lbNext.addEventListener("click", function (e) { e.stopPropagation(); nav(1); });
+    document.addEventListener("keydown", function (e) {
+      if (!lb.classList.contains("open")) return;
+      if (e.key === "Escape") closeLb();
+      else if (e.key === "ArrowLeft") nav(-1);
+      else if (e.key === "ArrowRight") nav(1);
+    });
+  }
+
+  /* ───── One-time hint that photos are tappable ───── */
+  if (!reduceMotion) setTimeout(function () { toast("psst — tap any photo to make it bigger 💗"); }, 5200);
 })();
