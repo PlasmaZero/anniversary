@@ -66,7 +66,11 @@
 
   /* ───── Floating petals / hearts ───── */
   var petalLayer = document.getElementById("petals");
-  var HEARTS = ["♥", "❤", "🤍", "💗", "✿"];
+  /* Heart glyphs. The trailing ︎ is a text-presentation selector: it forces
+     monochrome (text) rendering instead of colourful emoji, so every heart picks
+     up the theme's rose colour from CSS and the layer stays soft and cohesive. */
+  var TS = "︎";
+  var HEARTS = ["♥" + TS, "❤" + TS, "♡" + TS, "❥" + TS, "❧" + TS];
 
   function spawnPetal() {
     if (!petalLayer || document.hidden) return;
@@ -174,7 +178,7 @@
 
   /* ───── Closing buttons ───── */
   var loveBtn = document.getElementById("loveBtn");
-  if (loveBtn) loveBtn.addEventListener("click", function () { scatter(null, ["🤍", "♥", "💗", "❤"]); });
+  if (loveBtn) loveBtn.addEventListener("click", function () { scatter(null, ["💗", "💕", "💖", "🤍"]); });
   var kissBtn = document.getElementById("kissBtn");
   if (kissBtn) kissBtn.addEventListener("click", function () { scatter(null, ["😘", "💋", "💕"]); toast("mwah 💋"); });
   var replayBtn = document.getElementById("replayBtn");
@@ -183,9 +187,10 @@
   });
 
   /* ───── Live "time together" counter ─────
-     ❤ Your first day together, as "YYYY-MM-DDTHH:MM:SS±HH:MM". The trailing offset is
-        your timezone — Eastern is -04:00 in summer (EDT) and -05:00 in winter (EST). */
-  var ANNIVERSARY = new Date("2025-06-09T23:47:00-04:00"); // 9 June 2025, 11:47 PM Eastern
+     ❤ The exact moment it began. Built from local date parts — new Date(year,
+        monthIndex, day, hour, min) — so it always means 11:47 PM on 9 June 2025
+        in the viewer's own timezone, with no daylight-saving drift. Counting UP. */
+  var ANNIVERSARY = new Date(2025, 5, 9, 23, 47, 0); // 9 June 2025, 11:47 PM
   var cD = document.getElementById("c-days"), cH = document.getElementById("c-hrs"),
       cM = document.getElementById("c-min"), cS = document.getElementById("c-sec");
   function pad(n) { return (n < 10 ? "0" : "") + n; }
